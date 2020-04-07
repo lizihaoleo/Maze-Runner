@@ -67,15 +67,16 @@ class Maze(object):
 
     def generate_maze(self,start_coor = (0,0)):
         cur_row, cur_col = start_coor
-        solution_path = [start_coor]
+        # solution_path = [start_coor]
         self.grid[cur_row][cur_col].visited = True
         visit_counter = 1
-        stack = list()
+        stack = [start_coor]
 
         print("Generating the maze with depth-first search...")
         time_start = time.clock()
 
-        while visit_counter < self.grid_size:
+        while stack:
+            cur_row, cur_col = stack.pop()
             neis = self.find_unvisited_neis(cur_row,cur_col)
             if neis:
                 stack.append((cur_row,cur_col))
@@ -83,13 +84,10 @@ class Maze(object):
                 self.grid[cur_row][cur_col].connect(self.grid[nxt_row][nxt_col])
                 self.grid[nxt_row][nxt_col].connect(self.grid[cur_row][cur_col])
                 self.grid[nxt_row][nxt_col].visited = True
-                cur_row, cur_col = nxt_row, nxt_col
-                visit_counter += 1            
-            elif len(stack) > 0:
-                cur_row, cur_col = stack.pop()
-            solution_path.append((cur_row,cur_col))
+                stack.append((nxt_row, nxt_col))
+            visit_counter += 1
 
-        print("Number of moves performed: {}".format(len(solution_path)))
+        print("Number of moves performed: {}".format(visit_counter))
         print("Execution time for algorithm: {:.4f}".format(time.clock() - time_start))
 
         self.grid[self.entry_coor[0]][self.entry_coor[1]].set_entry_exit("entry",
@@ -101,7 +99,7 @@ class Maze(object):
             for j in range(self.num_cols):
                 self.grid[i][j].visited = False      # Set all cells to unvisited before returning grid
 
-        self.generation_path = solution_path
+        # self.generation_path = solution_path
 
     def show_maze(self):
         # Create the plot figure and style the axes
