@@ -3,25 +3,33 @@ import time
 import random
 import math
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 import os
+
+# debug only
+# random.seed(9)
 
 class Maze(object):
     def __init__(self, num_rows, num_cols,show_maze = True):
         self.cell_size = 1
-        self.media_filename = os.getcwd()
-        print(self.media_filename)
+        self.media_filename = self.generate_save_path()
         self.num_cols = num_cols
         self.num_rows = num_rows
         self.grid_size = num_rows*num_cols
         self.entry_coor = self.pick_random_point_on_boundaries(None)
         self.exit_coor = self.pick_random_point_on_boundaries(self.entry_coor)
         self.generation_path = []
-        self.solution_path = None
         self.initial_grid = self.generate_grid()
         self.grid = self.initial_grid
         self.generate_maze()
         if show_maze:
             self.show_maze()
+
+    def generate_save_path(self,folder_name = 'Maze Generate'):
+        cur_path = os.getcwd() + '/' + folder_name
+        if not os.path.exists(cur_path):
+            os.makedirs(cur_path)
+        return cur_path
 
     def pick_random_point_on_boundaries(self,entry_point=None):
         '''
@@ -59,6 +67,20 @@ class Maze(object):
             if self.unvisited_cell(row+delta_x, col+delta_y):
                 neis.append((row+delta_x, col+delta_y))
         return neis
+
+    def find_valid_neis(self,row,col):
+        dirs = [[1,0],[-1,0],[0,1],[0,-1]]
+        neis = list()
+        current_cell = self.grid[row][col]
+        for delta_x, delta_y in dirs:
+            nei = self.get_cell(row+delta_x, col+delta_y)
+            if nei and not current_cell.is_walls_between(nei) and not nei.visited:
+                neis.append((row+delta_x, col+delta_y))
+        return neis
+    
+    def get_cell(self,row,col):
+        if 0 <= row < self.num_rows and 0 <= col < self.num_cols:
+            return self.grid[row][col]
 
     def unvisited_cell(self,row,col):
         if 0 <= row < self.num_rows and 0 <= col < self.num_cols:
@@ -112,7 +134,7 @@ class Maze(object):
         plt.show()
 
         if self.media_filename:
-            fig.savefig("{}{}.png".format(self.media_filename, "_generation"))
+            fig.savefig("{}{}.png".format(self.media_filename, "/maze_generation"))
 
     def configure_plot(self):
         """Sets the initial properties of the maze plot. Also creates the plot and axes"""
@@ -156,3 +178,21 @@ class Maze(object):
                 if self.initial_grid[i][j].walls["left"]:
                     self.ax.plot([j*self.cell_size, j*self.cell_size],
                                  [(i+1)*self.cell_size, i*self.cell_size], color="k")
+
+    def show_solution(self,path):
+        # Create the figure and style the axes
+        fig = self.configure_plot()
+
+        # Plot the walls onto the figure
+        self.plot_walls()
+        for i, j in path:
+            rect = patches.Rectangle((j*self.cell_size,i*self.cell_size),self.cell_size,self.cell_size,linewidth=1,alpha=.5,facecolor='r')
+            self.ax.add_patch(rect)
+
+        # Display the plot to the user
+        plt.show()
+
+        # Handle any saving
+        if self.media_filename:
+            fig.savefig("{}{}.png".format(self.media_filename, "/maze_solution"))
+

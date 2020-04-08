@@ -5,6 +5,7 @@ class Cell(object):
         self.visited = False
         self.is_entry_exit = None
         self.walls = {"top": True, "right": True, "bottom": True, "left": True}
+        self.prev = None
 
     def set_entry_exit(self,is_entry_exit,row_limit,col_limit):
         if self.row == 0:
@@ -32,4 +33,27 @@ class Cell(object):
         elif self.col - neighbour_col == -1:
             self.walls["right"] = False
             return True
+        return False
+
+    def is_walls_between(self, neighbour):
+        """Function that checks if there are walls between self and a neighbour cell.
+        Returns true if there are walls between. Otherwise returns False.
+
+        Args:
+            neighbour The cell to check between
+
+        Return:
+            True: If there are walls in between self and neighbor
+            False: If there are no walls in between the neighbors and self
+
+        """
+        if self.row - neighbour.row == 1 and self.walls["top"] and neighbour.walls["bottom"]:
+            return True
+        elif self.row - neighbour.row == -1 and self.walls["bottom"] and neighbour.walls["top"]:
+            return True
+        elif self.col - neighbour.col == 1 and self.walls["left"] and neighbour.walls["right"]:
+            return True
+        elif self.col - neighbour.col == -1 and self.walls["right"] and neighbour.walls["left"]:
+            return True
+
         return False
