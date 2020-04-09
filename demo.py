@@ -1,10 +1,10 @@
-from src.maze import Maze
-from src.solver import DFS
+from src.mazeManager import MazeManger
+
 def main():
-    maze = Maze(10,10)
-    solver = DFS(maze)
-    path = solver.solve()
-    maze.show_solution(path)
+    manager = MazeManger()
+    manager.add_maze(40,40)
+    manager.solve_maze(0,"DFS")
+    manager.solve_maze(0,"BFS")
 
 if  __name__ == "__main__":
     main()

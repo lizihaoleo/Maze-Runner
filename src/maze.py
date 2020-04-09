@@ -5,12 +5,14 @@ import math
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import os
+from src.timer import timeit
 
 # debug only
-# random.seed(9)
+random.seed(128)
 
 class Maze(object):
-    def __init__(self, num_rows, num_cols,show_maze = True):
+    def __init__(self, num_rows, num_cols, id=0, show_maze = True):
+        self.id = id
         self.cell_size = 1
         self.media_filename = self.generate_save_path()
         self.num_cols = num_cols
@@ -122,8 +124,10 @@ class Maze(object):
                 self.grid[i][j].visited = False      # Set all cells to unvisited before returning grid
 
         # self.generation_path = solution_path
-
+    
+    @timeit
     def show_maze(self):
+        print("\nVisualize maze ...")
         # Create the plot figure and style the axes
         fig = self.configure_plot()
 
@@ -134,7 +138,7 @@ class Maze(object):
         plt.show()
 
         if self.media_filename:
-            fig.savefig("{}{}.png".format(self.media_filename, "/maze_generation"))
+            fig.savefig("{}{}{}.png".format(self.media_filename, "/maze_generation_",self.id))
 
     def configure_plot(self):
         """Sets the initial properties of the maze plot. Also creates the plot and axes"""
@@ -178,8 +182,10 @@ class Maze(object):
                 if self.initial_grid[i][j].walls["left"]:
                     self.ax.plot([j*self.cell_size, j*self.cell_size],
                                  [(i+1)*self.cell_size, i*self.cell_size], color="k")
-
-    def show_solution(self,path):
+    
+    @timeit
+    def show_solution(self,path,solver):
+        print("\nVisualize maze solution ...")
         # Create the figure and style the axes
         fig = self.configure_plot()
 
@@ -194,5 +200,5 @@ class Maze(object):
 
         # Handle any saving
         if self.media_filename:
-            fig.savefig("{}{}.png".format(self.media_filename, "/maze_solution"))
+            fig.savefig("{}{}{}.png".format(self.media_filename, "/maze_solution_",solver.name))
 
