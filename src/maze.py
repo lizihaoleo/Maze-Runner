@@ -3,16 +3,19 @@ import time
 import random
 import math
 import matplotlib.pyplot as plt
+import matplotlib.lines as lines
 import matplotlib.patches as patches
 import os
 from src.timer import timeit
+from src.graph import Graph
 
-# debug only
-random.seed(128)
 
 class Maze(object):
-    def __init__(self, num_rows, num_cols, id=0, show_maze = True):
+    def __init__(self, num_rows, num_cols, id=0, show = True, debug = False):
         self.id = id
+        self.debug = debug
+        if self.debug:
+            random.seed(128)
         self.cell_size = 1
         self.media_filename = self.generate_save_path()
         self.num_cols = num_cols
@@ -24,8 +27,9 @@ class Maze(object):
         self.initial_grid = self.generate_grid()
         self.grid = self.initial_grid
         self.generate_maze()
-        if show_maze:
+        if show:
             self.show_maze()
+        
 
     def generate_save_path(self,folder_name = 'Maze Generate'):
         cur_path = os.getcwd() + '/' + folder_name
@@ -91,7 +95,6 @@ class Maze(object):
 
     def generate_maze(self,start_coor = (0,0)):
         cur_row, cur_col = start_coor
-        # solution_path = [start_coor]
         self.grid[cur_row][cur_col].visited = True
         visit_counter = 1
         stack = [start_coor]
@@ -122,8 +125,6 @@ class Maze(object):
         for i in range(self.num_rows):
             for j in range(self.num_cols):
                 self.grid[i][j].visited = False      # Set all cells to unvisited before returning grid
-
-        # self.generation_path = solution_path
     
     @timeit
     def show_maze(self):
@@ -131,11 +132,11 @@ class Maze(object):
         # Create the plot figure and style the axes
         fig = self.configure_plot()
 
-        # Plot the walls on the figure
+        # Plot the walls and graph nodes on the figure
         self.plot_walls()
 
         # Display the plot to the user
-        plt.show()
+        # plt.show()
 
         if self.media_filename:
             fig.savefig("{}{}{}.png".format(self.media_filename, "/maze_generation_",self.id))
@@ -144,7 +145,7 @@ class Maze(object):
         """Sets the initial properties of the maze plot. Also creates the plot and axes"""
 
         # Create the plot figure
-        fig = plt.figure(figsize = (7, 7*self.num_rows/self.num_cols))
+        self.fig = plt.figure(figsize = (7, 7*self.num_rows/self.num_cols))
 
         # Create the axes
         self.ax = plt.axes()
@@ -160,7 +161,12 @@ class Maze(object):
                             r"{}$\times${}".format(self.num_rows, self.num_cols),
                             bbox={"facecolor": "gray", "alpha": 0.5, "pad": 4}, fontname="serif", fontsize=15)
 
-        return fig
+        return self.fig
+
+    def plot_solution_path(self,path):
+        for i, j in path:
+            rect = patches.Rectangle((j*self.cell_size,i*self.cell_size),self.cell_size,self.cell_size,linewidth=1,alpha=.5,facecolor='r')
+            self.ax.add_patch(rect)
 
     def plot_walls(self):
         """ Plots the walls of a maze. This is used when generating the maze image"""
@@ -190,10 +196,8 @@ class Maze(object):
         fig = self.configure_plot()
 
         # Plot the walls onto the figure
-        self.plot_walls()
-        for i, j in path:
-            rect = patches.Rectangle((j*self.cell_size,i*self.cell_size),self.cell_size,self.cell_size,linewidth=1,alpha=.5,facecolor='r')
-            self.ax.add_patch(rect)
+        # self.plot_walls()
+        self.plot_solution_path(path)
 
         # Display the plot to the user
         plt.show()
@@ -201,4 +205,34 @@ class Maze(object):
         # Handle any saving
         if self.media_filename:
             fig.savefig("{}{}{}.png".format(self.media_filename, "/maze_solution_",solver.name))
+
+    def no_wall_in_row_between(self,left_position,right_position):
+        if left_position[0] != right_position[0]:
+            raise Exception("Two cells not in same row")
+        row = left_position[0]
+        left, right = left_position[1], right_position[1]
+        if right < left:
+            raise Exception("right boundary {} should greater than left boundary {}".format(right,left))
+        while left < right:
+            cur = self.grid[row][left]
+            nei = self.grid[row][left+1]
+            if cur.is_walls_between(nei):
+                return False
+            left += 1
+        return True
+
+    def no_wall_in_col_between(self,left_position,right_position):
+        if left_position[1] != right_position[1]:
+            raise Exception("Two cells not in same column")
+        col = left_position[1]
+        left, right = left_position[0], right_position[0]
+        if right < left:
+            raise Exception("right boundary {} should greater than left boundary {}".format(right,left))
+        while left < right:
+            cur = self.grid[left][col]
+            nei = self.grid[left+1][col]
+            if cur.is_walls_between(nei):
+                return False
+            left += 1
+        return True
 

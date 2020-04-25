@@ -1,20 +1,24 @@
 from src.maze import Maze
-from src.solver import DFS,BFS
+from src.graph import Graph
+from src.solver import DFS,BFS,Dijkstra
 
 class MazeManger(object):
     def __init__(self):
+        self.graphs = []
         self.mazes = []
 
-    def add_maze(self,row,col,id=0):
+    def add_maze(self,row,col,id=0, show = True, debug=False): # return a optimize graph instead of maze instance
         if id is not 0:
-            self.mazes.append(Maze(row, col, id))
+            self.mazes.append(Maze(row, col, id, show, debug))
         else:
             if len(self.mazes) < 1:
-                self.mazes.append(Maze(row, col, 0))
+                self.mazes.append(Maze(row, col, 0, show, debug))
             else:
-                self.mazes.append(Maze(row, col, len(self.mazes) + 1))
+                self.mazes.append(Maze(row, col, len(self.mazes) + 1, show, debug))
 
-        return self.mazes[-1]
+        graph = Graph(self.mazes[-1],show,debug)
+        self.graphs.append(graph)
+        return self.graphs[-1]
 
     def get_maze(self, id):
         for maze in self.mazes:
@@ -22,22 +26,30 @@ class MazeManger(object):
                 return maze
         print("Unable to locate maze")
         return None
-    
-    def solve_maze(self, maze_id, method, show_solution = True):
-        maze = self.get_maze(maze_id)
-        if not maze:
-            print("No valid maze")
+
+    def get_graph(self, id):
+        for graph in self.graphs:
+            if graph.id == id:
+                return graph
+        print("Unable to locate graph")
+        return None
+
+    def solve_graph(self, graph_id, method, show_solution = True):
+        graph = self.get_graph(graph_id)
+        if not graph:
+            print("No valid graph")
             return 
         if method == "DFS":
-            solver = DFS(maze)
+            solver = DFS(graph)
         elif method == "BFS":
-            solver = BFS(maze)
+            solver = BFS(graph)
+        elif method == "DIJ":
+            solver = Dijkstra(graph)
         else:
             print("Not valid solver method name")
             return
         path = solver.solve()
         if show_solution:
-            maze.show_solution(path,solver)
+            graph.show_solution(path,solver)
         return path
-
     
