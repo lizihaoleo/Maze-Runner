@@ -31,7 +31,7 @@ class Maze(object):
             self.show_maze()
         
 
-    def generate_save_path(self,folder_name = 'Maze Generate'):
+    def generate_save_path(self,folder_name = 'MazeGenerate'):
         cur_path = os.getcwd() + '/' + folder_name
         if not os.path.exists(cur_path):
             os.makedirs(cur_path)
