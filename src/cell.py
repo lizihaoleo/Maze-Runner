@@ -2,10 +2,27 @@ class Cell(object):
     def __init__(self,row,col):
         self.row = row
         self.col = col
+        self.position = (row,col)
         self.visited = False
         self.is_entry_exit = None
         self.walls = {"top": True, "right": True, "bottom": True, "left": True}
-        self.prev = None
+        self.neis = set()
+        self.prev = None #this filed helps to reverse look up solution path
+        self.dist = float('inf') #this field use in dijkstra algorithm
+
+    def __repr__(self):
+            return "({},{}) d:{}".format(self.row, self.col,self.dist)
+
+    def __str__(self):
+        return self.__repr__()
+
+    # def __hash__(self):
+    #     return id(self)
+
+    def __lt__(self, obj):
+        """self < obj."""
+        return (self.dist) < (obj.dist)
+
 
     def set_entry_exit(self,is_entry_exit,row_limit,col_limit):
         if self.row == 0:
@@ -57,3 +74,11 @@ class Cell(object):
             return True
 
         return False
+
+    def is_hallway(self):
+        if not self.walls["top"] and not self.walls["bottom"] and self.walls["left"] and self.walls["right"]:
+            return True
+        elif not self.walls["left"] and not self.walls["right"] and self.walls["top"] and self.walls["bottom"]:
+            return True
+        return False
+
