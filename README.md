@@ -1,10 +1,10 @@
 # Maze-Runner
-* An experience project to practice OOP and multiple algorithms
+* An experimental project to practice OOP and multiple algorithms
 * Generate random maze and find the solution path using different algorithms
 
 # Baisc Algorithm
 ## Maze generation
-A simple DFS with random selection at each step, it will walk through all cells in the m by n matrix grid, and at each step it will connect adjacency in random order.
+A simple DFS with random selection at each step, it will walk through all cells in the m by n matrix grid, and at each step it will connect unvisited adjacency cells in a random order.
 
 Here is the pseudo code:
 
@@ -29,9 +29,9 @@ Here is a maze example
 ![Here is a maze example](/MazeGenerate/maze_generation_0.png)
 
 ## Graph optimization
-After generate the maze we can apply different path algorithm on the maze (such as DFS,BFS), but I realize there are many cells are useless and will waste computaional time if we keep those cells.
+After generate the maze we can apply different path algorithms on the maze (such as DFS,BFS), but I realize there are many cells are useless and will waste computaional time if we keep those cells.
 
-For example, the 2 hightlight cells can only move in one dirction, and we have spend 2 more step to calcuate this 2 cells, which case useless computation. Actually we can skip thos 2 cells casue we know we will move straghtford from end to end.
+For example, the 2 hightlight cells can only move in one dirction, and we have spend 2 more steps to calcuate this 2 cells, which case useless computation. Actually we can skip those 2 cells casue we know we will move straghtford from end to end.
 ![Hallway example](/MazeGenerate/maze_hallways_0.png)
 
 So Ideally, we can ignore those "hallway" cells, create a graph instance store all import cells and connected relationships. The maze can optimize as following graph.
