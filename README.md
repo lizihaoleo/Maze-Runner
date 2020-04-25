@@ -1,12 +1,12 @@
 # Maze-Runner
-* An experience project to practice OOP and multiple algorithm
-* Generate random maze and find the solution path using different algorithm
+* An experience project to practice OOP and multiple algorithms
+* Generate random maze and find the solution path using different algorithms
 
 # Baisc Algorithm
 ## Maze generation
 A simple DFS with random selection at each step, it will walk through all cells in the m by n matrix grid, and at each step it will connect adjacency in random order.
 
-Here is the pesudo code:
+Here is the pseudo code:
 
 <pre><code>Initialze m * n grid of cells, each cells has 4 walls
 
@@ -42,7 +42,7 @@ Then we can apply different solver algorithm on the graph.
 ### DFS/BFS
 Very straightforwad idea to solve graph problem.
 
-Here is the DFS pesudo code:
+Here is the DFS pseudo code:
 <pre><code>stack = [start]
 start.visited = True
 while stack:
@@ -60,7 +60,7 @@ Time complexity will be O(m*n).
 
 ### Dijkstra
 Dijkstra is an algorithm to guarantee find shortes path in the graph.
-Here is the pesudo code.
+Here is the pseudo code.
 <pre><code>heap = [start] # min-heap
 start.dist = 0 # dist = inf by default
 while heap:
