@@ -34,7 +34,7 @@ After generate the maze we can apply different path algorithms on the maze (such
 For example, the 2 hightlight cells can only move in one dirction, and we have spend 2 more steps to calcuate this 2 cells, which case useless computation. Actually we can skip those 2 cells casue we know we will move straghtford from end to end.
 ![Hallway example](/MazeGenerate/maze_hallways_0.png)
 
-So Ideally, we can ignore those "hallway" cells, create a graph instance store all import cells and connected relationships. The maze can optimize as following graph.
+So Ideally, we can ignore those "hallway" cells, create a graph instance to store all important cells and connected relationships. The maze can optimize as following graph.
 ![Graph example](/MazeGenerate/graph_generation_0.png)
 
 Then we can apply different solver algorithm on the graph.
